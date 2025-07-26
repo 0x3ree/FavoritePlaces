@@ -30,7 +30,7 @@ export default function App() {
                 <IconButton
                   icon="add-to-list"
                   size={24}
-                  color={tintColor || Colors.accent500}
+                  color={tintColor}
                   onPress={() => navigation.navigate("AddPlace")}
                 />
               ),
