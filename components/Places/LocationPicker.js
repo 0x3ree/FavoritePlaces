@@ -1,4 +1,5 @@
-import { Alert, View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { Image, Alert, View, StyleSheet, Text } from "react-native";
 import OutlineButton from "../UI/OutlineButton";
 import { Colors } from "../../constants/colors";
 import {
@@ -6,8 +7,10 @@ import {
   useForegroundPermissions,
   PermissionStatus,
 } from "expo-location";
+import { getMapPreview } from "../../util/location";
 
 function LocationPicker() {
+  const [pickedLocation, setPickedLocation] = useState(); // this state will hold the location data, we can use it to display a map preview or save the location data.
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions(); // this hook is used to request location permissions for ios and android
 
@@ -34,13 +37,28 @@ function LocationPicker() {
       return;
     }
     const location = await getCurrentPositionAsync(); // we can also pass an object with options to the function to configure the location request e.g accuracy but we don't need that fr this proj.
-    console.log(location);
+    setPickedLocation({
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    });
+  }
+  function pickOnMapHandler() {}
+
+  let locationPreview = <Text>No Location Picked Yet!</Text>;
+  if (pickedLocation) {
+    locationPreview = (
+      <Image
+        style={styles.mapImage}
+        source={{
+          uri: getMapPreview(pickedLocation.lat, pickedLocation.lng),
+        }}
+      />
+    );
   }
 
-  function pickOnMapHandler() {}
   return (
     <View>
-      <View style={styles.mapPreview}></View>
+      <View style={styles.mapPreview}>{locationPreview}</View>
       <View style={styles.actions}>
         <OutlineButton icon="location" onPress={getLocationHandler}>
           Locate User
@@ -69,6 +87,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  mapImage: {
+    width: "100%",
+    height: "100%",
   },
 });
 
