@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  useNavigation,
+  useRoute,
+  useIsFocused,
+} from "@react-navigation/native";
 import { Image, Alert, View, StyleSheet, Text } from "react-native";
 import OutlineButton from "../UI/OutlineButton";
 import { Colors } from "../../constants/colors";
@@ -11,8 +16,23 @@ import { getMapPreview } from "../../util/location";
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState(); // this state will hold the location data, we can use it to display a map preview or save the location data.
+  const isFocused = useIsFocused(); // this hook is used to check if the screen is focused, we can use it to conditionally render the map preview, because without it, using the stack navigator the screen is closed why by it doesn't re render , another screen just comes ontop of it  .
+  const navigation = useNavigation();
+
+  const route = useRoute(); // we can use this to get the params passed from the Map screen, we can also use it to navigate to the Map screen.
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions(); // this hook is used to request location permissions for ios and android
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng,
+      };
+      setPickedLocation(mapPickedLocation);
+    }
+  }, [route, isFocused]); //we use this to render a code conditonally, if the mapPickedLocation is not undefined we set the pickedLocation state to the mapPickedLocation, this will allow us to display the map preview if the user has already picked a location. and we've also updated the code to use the isFocused hook to check if the screen is focused, this will prevent the code from running when the screen is not focused, which can happen when using the stack navigator.
 
   async function verifyPermissions() {
     if (
@@ -42,7 +62,9 @@ function LocationPicker() {
       lng: location.coords.longitude,
     });
   }
-  function pickOnMapHandler() {}
+  function pickOnMapHandler() {
+    navigation.navigate("Map");
+  }
 
   let locationPreview = <Text>No Location Picked Yet!</Text>;
   if (pickedLocation) {
@@ -82,6 +104,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    overflow: "hidden",
   },
   actions: {
     flexDirection: "row",
@@ -91,6 +114,7 @@ const styles = StyleSheet.create({
   mapImage: {
     width: "100%",
     height: "100%",
+    //borderRadius: 4,
   },
 });
 
