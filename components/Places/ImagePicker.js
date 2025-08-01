@@ -9,7 +9,7 @@ import { Colors } from "../../constants/colors";
 import OutlineButton from "../UI/OutlineButton";
 
 //using the camera for andriod and ios have different permissons, unlike andrid we handle in the app.json for ios we hadnle it in the imagePicker.js file
-function ImagePicker() {
+function ImagePicker({ onTakeImage }) {
   // for us to display a preview of the image we need to store the image object that describes the image in a state that belongs to the imagePicker container.
   const [pickedImage, setPickedImage] = useState();
 
@@ -49,6 +49,7 @@ function ImagePicker() {
     // the image object contains an array of assets, we are interested in the first asset which is 0 because array index starts at 0.
     // we then access the uri property of the asset to get the image uri that we can use to display the image in the preview.
     // we can also access other properties of the image object like width, height, and type
+    onTakeImage(image.assets[0].uri); // this is the function that we pass to the ImagePicker component to handle the image taken by the user which we then call in the placeform for submission(so when a user submit/ adds a place all data is collected and merged).
   }
   /* GEMINI SUGGESTION 
     // Check if an image was actually taken and not cancelled

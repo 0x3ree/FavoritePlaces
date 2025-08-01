@@ -12,9 +12,9 @@ import {
   useForegroundPermissions,
   PermissionStatus,
 } from "expo-location";
-import { getMapPreview } from "../../util/location";
+import { getMapPreview, getAddress } from "../../util/location";
 
-function LocationPicker() {
+function LocationPicker({ onPickLocation }) {
   const [pickedLocation, setPickedLocation] = useState(); // this state will hold the location data, we can use it to display a map preview or save the location data.
   const isFocused = useIsFocused(); // this hook is used to check if the screen is focused, we can use it to conditionally render the map preview, because without it, using the stack navigator the screen is closed why by it doesn't re render , another screen just comes ontop of it  .
   const navigation = useNavigation();
@@ -33,6 +33,19 @@ function LocationPicker() {
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]); //we use this to render a code conditonally, if the mapPickedLocation is not undefined we set the pickedLocation state to the mapPickedLocation, this will allow us to display the map preview if the user has already picked a location. and we've also updated the code to use the isFocused hook to check if the screen is focused, this will prevent the code from running when the screen is not focused, which can happen when using the stack navigator.
+  useEffect(() => {
+    async function handleLocation() {
+      if (pickedLocation) {
+        const address = await getAddress(
+          pickedLocation.lat,
+          pickedLocation.lng
+        );
+        onPickLocation({ ...pickedLocation, address: address }); // we let the place form know about our pickedLocation and also merge in the human readaable adress
+      }
+    }
+    handleLocation();
+  }, [pickedLocation, onPickLocation]); // this effect is used to call the onPickLocation function passed from the parent component to update the
+  // location data when the pickedLocation state changes, this will allow us to use the location data in the parent component, in this case the PlaceForm component, so we can save it when the user submits the form. in order for it not to render unnecessarily we use the callback function in the placeform component.
 
   async function verifyPermissions() {
     if (
