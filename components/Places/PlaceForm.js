@@ -4,13 +4,14 @@ import { Colors } from "../../constants/colors";
 import ImagePicker from "./ImagePicker";
 import LocationPicker from "./LocationPicker";
 import Button from "../UI/Button";
+import { Place } from "../../model/place";
 
-function PlaceForm(enteredText) {
+function PlaceForm({ onCreatePlace }) {
   const [enteredTitle, setEnteredTitle] = useState("");
 
   const [selectedImage, setSelectedImage] = useState();
 
-  const [pickedLocation, setPickedLocation] = useState();
+  const [pickedLocation, setPickedLocation] = useState(); // the pickedLocation asides the lat and lng also comes with the human readable address which we'vev cnfigured
 
   function changeTitleHandler(enteredText) {
     setEnteredTitle(enteredText); // updates the state with the text entered in the textInput, the enteredText is the text entered by the user and it's given by react native.
@@ -23,9 +24,8 @@ function PlaceForm(enteredText) {
   }, []); // we set the dependencies to an empty array because we have no external dependency here only the updating function which we can add but isn't neccessary because it wouldn't change
 
   function savePlaceHandler() {
-    console.log(enteredTitle);
-    console.log(selectedImage);
-    console.log(pickedLocation);
+    const placeData = new Place(enteredTitle, selectedImage, pickedLocation); // the data we forward here is an object containing our model which will be passed to the onCreatePlace function
+    onCreatePlace(placeData);
   }
   return (
     <ScrollView style={styles.form}>

@@ -33,8 +33,8 @@ function Map({ navigation }) {
       );
       return;
     }
-
-    navigation.navigate("AddPlace", {
+    // navigation.navigate settigns has chnaged in the new react nav which is why we used popTo instead
+    navigation.popTo("AddPlace", {
       pickedLat: selectedLocation.lat,
       pickedLng: selectedLocation.lng,
     });

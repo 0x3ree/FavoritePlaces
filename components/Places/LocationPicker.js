@@ -75,8 +75,9 @@ function LocationPicker({ onPickLocation }) {
       lng: location.coords.longitude,
     });
   }
+  // navigation.navigate settigns has chnaged in the new react nav which is why we used navigation.push instead to push a new screen onto the stack
   function pickOnMapHandler() {
-    navigation.navigate("Map");
+    navigation.push("Map");
   }
 
   let locationPreview = <Text>No Location Picked Yet!</Text>;
